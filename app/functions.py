@@ -71,34 +71,38 @@ def transfer_money(from_id: int, to_id: int, amount: float, pin: str):
         db.close()
 
 
-def get_history(account_id: int):
+def get_history(account_id: int, pin: str):
     db = SessionLocal()
     try:
         account = db.query(BankAccount).filter(BankAccount.id == account_id).first()
         if not account:
             raise ValueError("Аккаунт с таким ID не найден")
-        return account.get_history()
+        return account.get_history(pin)
     finally:
         db.close()
     
     
-def get_account_balance(account_id: int):
+def get_account_balance(account_id: int, pin: str):
     db = SessionLocal()
     try:
         account = db.query(BankAccount).filter(BankAccount.id == account_id).first()
         if not account:
             raise ValueError("Аккаунт с таким ID не найден")
-        return f"Баланс аккаунта: {account.balance}"
+        if not account.check_pin(pin):
+            raise ValueError("Неверный PIN-код")
+        return f"{account.balance}"
     finally:
         db.close()
         
 
-def get_account_by_id(account_id: int):
+def get_account_by_id(account_id: int, pin: str):
     db = SessionLocal()
     try:
         account = db.query(BankAccount).filter(BankAccount.id == account_id).first()
         if not account:
             raise ValueError("Аккаунт с таким ID не найден")
+        if not account.check_pin(pin):
+            raise ValueError("Неверный PIN-код")
         return f"Владелец: {account.owner}, Баланс: {account.balance}, Дата создания аккаунта: {account.created_at}"
     finally:
         db.close()

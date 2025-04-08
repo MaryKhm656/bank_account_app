@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship, object_session
 from datetime import datetime
-
-Base = declarative_base()
+from .database import Base
 
 class BankAccount(Base):
     __tablename__ = "accounts"
@@ -34,7 +33,7 @@ class BankAccount(Base):
             raise ValueError("Неверный PIN-код")
         if amount <= 0:
             raise ValueError("Сумма должна быть положительной")
-        if amount < self.balance:
+        if amount > self.balance:
             raise ValueError("Недостаточно средств")
         self.balance -= amount
         self.add_operation("Снятие", amount)
@@ -52,12 +51,16 @@ class BankAccount(Base):
 
         self.add_operation(f"Перевод на аккаунт {to_account.id}", -amount)
         to_account.add_operation(f"Перевод от аккаунта {self.id}", amount)
-        
+
     def add_operation(self, type_, amount):
         op = Operation(type=type_, amount=amount, timestamp=datetime.utcnow(), account=self)
-        self.operations.append(op)
+        session = object_session(self)
+        if session:
+            session.add(op)
         
-    def get_history(self):
+    def get_history(self, pin):
+        if not self.check_pin(pin):
+            raise ValueError("Неверный PIN-код")
         return [(op.type, op.amount, op.timestamp.strftime("%Y-%m-%d %H:%M:%S")) for op in self.operations]
     
     
