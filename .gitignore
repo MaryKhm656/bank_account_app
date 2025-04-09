@@ -1,16 +1,14 @@
+.venv/
+
+.idea/
+.vscode/
+*.iml
+
 *.pyc
 *.pyo
 __pycache__/
 
-.vscode/
-.idea/
-*.iml
-
-venv/
-env/
-
 *.sqlite3
-
 *.log
 
 *.egg-info/
