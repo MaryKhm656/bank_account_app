@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, object_session
 from datetime import datetime
-from database import Base
+from app.database import Base
+import bcrypt
 
 class BankAccount(Base):
     __tablename__ = "accounts"
@@ -13,12 +14,13 @@ class BankAccount(Base):
     _pin = Column("pin", String, nullable=False)
     
     operations = relationship("Operation", back_populates="account", cascade="all, delete-orphan")
-    
+
     def set_pin(self, pin: str):
-        self._pin = pin
-        
+        hashed = bcrypt.hashpw(pin.encode(), bcrypt.gensalt())
+        self._pin = hashed.decode()
+
     def check_pin(self, pin: str):
-        return self._pin == pin
+        return bcrypt.checkpw(pin.encode(), self._pin.encode())
     
     def deposit(self, amount, pin):
         if not self.check_pin(pin):

@@ -1,5 +1,5 @@
-from models import BankAccount
-from database import SessionLocal
+from app.models import BankAccount
+from app.database import SessionLocal
 
 def create_account(owner: str, pin: str, initial_balance: float = 0.0):
     db = SessionLocal()
@@ -93,7 +93,7 @@ def get_account_balance(account_id: int, pin: str):
         return f"{account.balance}"
     finally:
         db.close()
-        
+
 
 def get_account_by_id(account_id: int, pin: str):
     db = SessionLocal()
@@ -103,7 +103,7 @@ def get_account_by_id(account_id: int, pin: str):
             raise ValueError("Аккаунт с таким ID не найден")
         if not account.check_pin(pin):
             raise ValueError("Неверный PIN-код")
-        return f"Владелец: {account.owner}, Баланс: {account.balance}, Дата создания аккаунта: {account.created_at}"
+        return account
     finally:
         db.close()
 
