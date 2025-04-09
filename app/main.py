@@ -1,5 +1,5 @@
-from bank_account_app.app.database import init_db
-from bank_account_app.app.functions import (
+from database import init_db
+from functions import (
     create_account, deposit_to_account, withdraw_from_account,
     transfer_money, get_account_balance, get_account_by_id, get_history, delete_account
 )

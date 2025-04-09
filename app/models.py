@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, object_session
 from datetime import datetime
-from .database import Base
+from database import Base
 
 class BankAccount(Base):
     __tablename__ = "accounts"

@@ -1,5 +1,5 @@
-from bank_account_app.app.models import BankAccount
-from bank_account_app.app.database import SessionLocal
+from models import BankAccount
+from database import SessionLocal
 
 def create_account(owner: str, pin: str, initial_balance: float = 0.0):
     db = SessionLocal()
