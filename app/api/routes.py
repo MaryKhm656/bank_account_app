@@ -73,3 +73,16 @@ def transfer_money_to_account(from_id: int, to_id: int, request: TransferRequest
         raise HTTPException(status_code=400, detail=str(e))
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Ошибка при работе с базой данных")
+    
+@router.delete("/accounts/delete/{account_id}")
+def delete_account(account_id: int, pin: str):
+    try:
+        message = functions.delete_account(
+            account_id=account_id,
+            pin=pin
+        )
+        return {"message": message}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except SQLAlchemyError:
+        raise HTTPException(status_code=500, detail="Ошибка при работе с базой данных")
