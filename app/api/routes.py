@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.account import BankAccountCreate, BankAccountOut
+from app.schemas.account import BankAccountCreate, BankAccountOut, DepositRequest
 from app import models
 from app.database import SessionLocal
 from app import functions
@@ -28,5 +28,20 @@ def get_account_by_id(account_id: int, pin: str):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail="Ошибка при работе с базой данных")
+
+
+@router.post("/accounts/{account_id}/deposit")
+def deposit_to_account(account_id: int, request: DepositRequest):
+    try:
+        account = functions.deposit_to_account(
+            account_id=account_id,
+            amount=request.amount,
+            pin=request.pin
+        )
+        return {"message": f"Счет успешно пополнен! Новый баланс: {account.balance}"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Ошибка при работе с базой данных")
 

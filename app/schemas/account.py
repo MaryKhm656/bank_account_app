@@ -11,3 +11,8 @@ class BankAccountOut(BaseModel):
     balance: float
 
     model_config = ConfigDict(from_attributes=True)
+    
+    
+class DepositRequest(BaseModel):
+    amount: float
+    pin: str
