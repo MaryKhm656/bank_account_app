@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.account import BankAccountCreate, BankAccountOut, DepositRequest, WithdrawRequest
+from app.schemas.account import BankAccountCreate, BankAccountOut, DepositRequest, WithdrawRequest, TransferRequest
 from app import models
 from app.database import SessionLocal
 from app import functions
@@ -54,6 +54,21 @@ def withdraw_to_account(account_id: int, request: WithdrawRequest):
             pin=request.pin
         )
         return {"message": f"Снятие прошло успешно! Новый баланс: {account.balance}"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except SQLAlchemyError:
+        raise HTTPException(status_code=500, detail="Ошибка при работе с базой данных")
+    
+@router.post("/accounts/{from_id}/{to_id}/transfer")
+def transfer_money_to_account(from_id: int, to_id: int, request: TransferRequest):
+    try:
+        to_account, from_account = functions.transfer_money(
+            from_id=from_id,
+            to_id=to_id,
+            amount=request.amount,
+            pin=request.pin
+        )
+        return {"message": f"Перевод выполнен успешно! Баланс {to_account.owner}: {to_account.balance}. Баланс {from_account.owner}: {from_account.balance}"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except SQLAlchemyError:

@@ -20,3 +20,7 @@ class DepositRequest(BaseModel):
 class WithdrawRequest(BaseModel):
     amount: float
     pin: str
+    
+class TransferRequest(BaseModel):
+    amount: float
+    pin: str
