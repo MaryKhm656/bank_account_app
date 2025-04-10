@@ -16,3 +16,7 @@ class BankAccountOut(BaseModel):
 class DepositRequest(BaseModel):
     amount: float
     pin: str
+    
+class WithdrawRequest(BaseModel):
+    amount: float
+    pin: str
