@@ -7,13 +7,17 @@ router = APIRouter()
 
 @router.post("/accounts/", response_model=BankAccountOut)
 def create_account(account: BankAccountCreate):
-    created = functions.create_account(
-        owner=account.owner,
-        pin=account.pin,
-        initial_balance=account.balance
-    )
-    return created
-
+    try:
+        created = functions.create_account(
+            owner=account.owner,
+            pin=account.pin,
+            initial_balance=account.balance
+        )
+        return created
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except SQLAlchemyError:
+        raise HTTPException(status_code=500, detail="Ошибка при работе с базой данных")
 
 @router.get("/accounts/{account_id}", response_model=BankAccountOut)
 def get_account_by_id(account_id: int, pin: str):
@@ -37,7 +41,7 @@ def deposit_to_account(account_id: int, request: DepositRequest):
             amount=request.amount,
             pin=request.pin
         )
-        return {"message": f"Счет успешно пополнен! Новый баланс: {account.balance}"}
+        return account
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except SQLAlchemyError:
