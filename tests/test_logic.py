@@ -21,6 +21,11 @@ def test_create_account():
     assert account.balance == 500.0
 
     delete_account(account_id=account.id, pin="1234")
+
+def test_create_account_empty_owner():
+    with pytest.raises(ValueError) as e:
+        create_account(owner="", pin="1234", initial_balance=1000.0)
+    assert str(e.value) == "Имя владельца не может быть пустым"
     
 @pytest.mark.parametrize(
     "pin, balance, error_message",
