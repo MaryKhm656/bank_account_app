@@ -65,9 +65,9 @@ def transfer_money(from_id: int, to_id: int, amount: float, pin: str):
         from_account = db.query(BankAccount).filter(BankAccount.id == from_id).first()
         to_account = db.query(BankAccount).filter(BankAccount.id == to_id).first()
         if not from_account:
-            raise ValueError(f"Аккаунт с ID{from_id} не найден")
+            raise ValueError(f"Аккаунт с ID {from_id} не найден")
         if not to_account:
-            raise ValueError(f"Аккаунт с ID{to_id} не найден")
+            raise ValueError(f"Аккаунт с ID {to_id} не найден")
         from_account.transfer(to_account=to_account, amount=amount, pin=pin)
         db.commit()
         db.refresh(from_account)

@@ -55,7 +55,7 @@ def withdraw_from_account(account_id: int, request: WithdrawRequest):
             amount=request.amount,
             pin=request.pin
         )
-        return {"message": f"Снятие прошло успешно! Новый баланс: {account.balance}"}
+        return account
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except SQLAlchemyError:
@@ -70,7 +70,7 @@ def transfer_money_to_account(from_id: int, to_id: int, request: TransferRequest
             amount=request.amount,
             pin=request.pin
         )
-        return {"message": f"Перевод выполнен успешно! Баланс {to_account.owner}: {to_account.balance}. Баланс {from_account.owner}: {from_account.balance}"}
+        return from_account, to_account
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except SQLAlchemyError:
